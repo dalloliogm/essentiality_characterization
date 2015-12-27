@@ -5,6 +5,8 @@ library(dplyr)
 library(tidyr)
 library(phastCons100way.UCSC.hg19)
 library(Homo.sapiens)
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+
 
 
 
@@ -28,10 +30,10 @@ mmc3 %>% summarise(n_distinct(Gene), n_distinct(gene_id)) %>% print
 
 # getting gene coordinates
 if (!exists("allgenes")) {
-    allgenes = genes(TxDb.Hsapiens.UCSC.hg19.knownGene) %>% 
+        allgenes = genes(TxDb.Hsapiens.UCSC.hg38.knownGene) %>% 
         subset(gene_id %in% mmc3$gene_id) 
 
-    allgenes$cons100way = scores (phastCons100way.UCSC.hg19, allgenes)
+    allgenes$cons100way = scores (phastCons100way.UCSC.hg38, allgenes)
 }
 
 #allgenes.df = as.data.frame(mcols(allgenes))
