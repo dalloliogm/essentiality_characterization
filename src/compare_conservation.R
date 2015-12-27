@@ -3,7 +3,7 @@
 library(AnnotationHub)
 library(dplyr)
 library(tidyr)
-library(phastCons100way.UCSC.hg19)
+library(phastCons100way.UCSC.hg38)
 library(Homo.sapiens)
 library(TxDb.Hsapiens.UCSC.hg38.knownGene)
 
@@ -48,4 +48,8 @@ allgenes.df = allgenes %>%
 
 # plot
 allgenes.df %>% ggplot(aes(x=gene_type, y=-log(cons100way), fill=gene_type)) + geom_violin() + theme_bw() + ggtitle("conservation scores of core, fitness, and non-fitness genes")
+
+allgenes.df %>% group_by(gene_type) %>% summarise(perc=sum(cons100way>0.85)/n())
+allgenes.df %>% mutate(fitness = numTKOHits>0) %>% glm(fitness ~ cons100way, data=., family="binomial") %>% summary 
+
 
