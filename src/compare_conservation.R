@@ -3,9 +3,11 @@
 library(AnnotationHub)
 library(dplyr)
 library(tidyr)
-library(phastCons100way.UCSC.hg38)
+#library(phastCons100way.UCSC.hg38)
+library(phastCons100way.UCSC.hg19)
+#library(TxDb.Hsapiens.UCSC.hg38.knownGene)
 library(Homo.sapiens)
-library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+library(ggplot2)
 
 
 
@@ -30,10 +32,12 @@ mmc3 %>% summarise(n_distinct(Gene), n_distinct(gene_id)) %>% print
 
 # getting gene coordinates
 if (!exists("allgenes")) {
-        allgenes = genes(TxDb.Hsapiens.UCSC.hg38.knownGene) %>% 
+#        allgenes = genes(TxDb.Hsapiens.UCSC.hg38.knownGene) %>% 
+        allgenes = genes(TxDb.Hsapiens.UCSC.hg19.knownGene) %>% 
         subset(gene_id %in% mmc3$gene_id) 
 
-    allgenes$cons100way = scores (phastCons100way.UCSC.hg38, allgenes)
+#    allgenes$cons100way = scores (phastCons100way.UCSC.hg38, allgenes)
+    allgenes$cons100way = scores (phastCons100way.UCSC.hg19, allgenes)
 }
 
 #allgenes.df = as.data.frame(mcols(allgenes))
@@ -44,11 +48,12 @@ allgenes.df = allgenes %>%
     arrange(desc(cons100way)) %>% 
     mutate(rank=min_rank(cons100way)) %>%
     left_join(mmc3, by="gene_id") %>% 
-    mutate(gene_type = ifelse(numTKOHits>2, "core", ifelse(numTKOHits>0, "fitness", "nonfitness")))
+#    mutate(gene_type = ifelse(numTKOHits>2, "core", ifelse(numTKOHits>0, "fitness", "nonfitness")))
+    mutate(gene_type = ifelse(numTKOHits>0, "fitness", "nonfitness"))
 
 # plot
-allgenes.df %>% ggplot(aes(x=gene_type, y=-log(cons100way), fill=gene_type)) + geom_violin() + theme_bw() + ggtitle("conservation scores of core, fitness, and non-fitness genes")
-
+allgenes.df %>% ggplot(aes(x=gene_type, y=-log(cons100way), fill=gene_type)) + geom_violin() + theme_bw() + ggtitle("conservation scores of fitness and non-fitness genes")
+ggsave("conservation_scores.png")
 allgenes.df %>% group_by(gene_type) %>% summarise(perc=sum(cons100way>0.85)/n())
 allgenes.df %>% mutate(fitness = numTKOHits>0) %>% glm(fitness ~ cons100way, data=., family="binomial") %>% summary 
 
