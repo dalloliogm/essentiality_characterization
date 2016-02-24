@@ -51,6 +51,7 @@ allgenes.df = allgenes %>%
 #    mutate(gene_type = ifelse(numTKOHits>2, "core", ifelse(numTKOHits>0, "fitness", "nonfitness")))
     mutate(gene_type = ifelse(numTKOHits>0, "fitness", "nonfitness"))
 
+allgenes.df %>% write.table("data/allgenes_df.csv", row.names=F, sep="\t")
 # plot
 allgenes.df %>% ggplot(aes(x=gene_type, y=-log(cons100way), fill=gene_type)) + geom_violin() + theme_bw() + ggtitle("conservation scores of fitness and non-fitness genes")
 ggsave("conservation_scores.png")
