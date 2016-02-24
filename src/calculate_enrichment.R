@@ -2,8 +2,11 @@
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(clusterProfiler)
+library(DOSE)
+library(ReactomePA)
 
-
+pdf("plots.pdf", 16, 12)
 allgenes.df = read.table("data/allgenes_df.csv", header=T)
 allgenes.df.long = allgenes.df  %>% 
     mutate_each(funs(.>0), BF_hct116:BF_dld1) %>% 
@@ -14,3 +17,4 @@ allgenes.df.long = allgenes.df  %>%
 sm.do = compareCluster(gene_id~line, data=allgenes.df.long, fun="enrichDO")
 sm.kegg = compareCluster(gene_id~line, data=allgenes.df.long, fun="enrichKEGG")
 
+dev.off()
