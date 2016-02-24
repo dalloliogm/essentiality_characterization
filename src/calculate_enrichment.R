@@ -4,6 +4,13 @@ library(tidyr)
 library(ggplot2)
 
 
-allgenes.df = read.table("data/allgenes_df.csv")
-allgenes.df  %>% mutate_each(funs(.>0), BF_hct116:BF_dld1) %>% select(gene_id, cons100way, rank, BF_hct116:BF:dld1) %>% gather(line, is.fitness, -gene_id:cons100way))
+allgenes.df = read.table("data/allgenes_df.csv", header=T)
+allgenes.df.long = allgenes.df  %>% 
+    mutate_each(funs(.>0), BF_hct116:BF_dld1) %>% 
+    dplyr::select(gene_id, cons100way, rank, BF_hct116:BF_dld1)  %>%
+    gather(line, is.fitness, -c(gene_id:rank)) %>%
+    dplyr::filter(is.fitness==T)
+
+sm.do = compareCluster(gene_id~line, data=allgenes.df.long, fun="enrichDO")
+sm.kegg = compareCluster(gene_id~line, data=allgenes.df.long, fun="enrichKEGG")
 
