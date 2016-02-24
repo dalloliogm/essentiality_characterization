@@ -18,8 +18,8 @@ sm.do = compareCluster(gene_id~line, data=allgenes.df.long, fun="enrichDO")
 sm.kegg = compareCluster(gene_id~line, data=allgenes.df.long, fun="enrichKEGG")
 sm.react = compareCluster(gene_id~line, data=allgenes.df.long, fun="enrichPathway")
 
-sm.do %>% plot
-sm.kegg %>% plot
-sm.react %>% plot
+sm.do %>% plot %>% print
+sm.kegg %>% plot %>% print
+sm.react %>% plot %>% print
 
 dev.off()
